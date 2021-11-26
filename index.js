@@ -8,11 +8,7 @@ app.use(express.static('static'));
 
 
 // called to get the quiz questions
-<<<<<<< HEAD
 app.get('/getquestions', (request,response) => {
-=======
-app.get('/questionsInJSON', (request,response) => {
->>>>>>> 9540fdbea26d0b0a62e2725a3239b9bcd7a2fca8
     response.json(questionsList);
 });
 
