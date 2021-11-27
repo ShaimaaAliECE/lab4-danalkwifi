@@ -1,40 +1,36 @@
 const express = require('express');
-// define variable to hold the list of questions from JSON file (database)
 let questionsList = require('./questions.json');
 
 const app = express();
 
 app.use(express.static('static'));
 
-// dynamic handling 
 
 
 // called to get the quiz questions
-app.get('/questionsInJSON', (request,response) => {
+app.get('/getquestions', (request,response) => {
     response.json(questionsList);
 });
 
 // called to get feedback on the answer the user clicked
-app.get('/get-answer', (request, response) => {
+app.get('/getanswer', (request, response) => {
     let answer = '';
     let stem = request.query.stem;       
     let option = request.query.option;   
     
-    // compares the indices of the chosen option and the answer index for that question
     if((option == questionsList[stem].answerIndex)){
-        answer = 'Correct!';        //the user submitted the correct answer
+        answer = 'Correct!';        
     } else {
-        answer = 'Incorrect, try again';   //the user got the wron answer
+        answer = 'Incorrect, try again';  
       }      
     response.send(answer);
 });
 
 // called to get the score of the whole quiz
-app.get('/get-score', (request, response) => {
+app.get('/getscore', (request, response) => {
     let score = 0;
-    let selections = request.query.ans.split(',');      // holds array of the indices of the options the user submitted
-    let solutions = [];      // holds array of indices of the solutions (i.e. answerIndex for all questions)
-    // for loop to retrieve and insert solutions into the array
+    let selections = request.query.ans.split(',');      
+    let solutions = [];     
     for (let i=0; i<questionsList.length;i++){
         solutions.push(questionsList[i].answerIndex);
     }

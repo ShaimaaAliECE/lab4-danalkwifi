@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script type = "text/javascript" src="main.js"> </script>
-    <link rel="stylesheet" href="index.css" >
+    <link rel="stylesheet" href="style.css" >
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,10 +9,87 @@
 </head>
 <br>
         <h1>QUERIES QUIZ <br></h1>  
-        <div id='stemDiv'><button id="start" onclick="getStems()">click to start</button></div>
+        <div id='stem'><button id="start" onclick="getStems()">Start quiz</button></div>
 <br>
   <div id="score"></div>
 
 </body>
+<script>
+  // getting the question stems
+function getStems(){
+    let xReq = new XMLHttpRequest();
+    xReq.onreadystatechange = displayStems;
+    
+    xReq.open('GET','/getquestions',true);
+    xReq.send();
+}
+
+// is called every time the ready state changes
+function displayStems(){
+    if(this.readyState == 4 && this.status == 200){
+        let stem = document.getElementById('stem');
+        let questionsList = JSON.parse(this.responseText);
+        let options = [];
+            let content ='';
+            for (let q=0; q<questionsList.length; q++)
+            {
+                options = questionsList[q].options;
+                content += `<form ><form><label name="stem" id="${q}">${questionsList[q].stem}<br></label>`
+                for (let o=0; o<options.length;o++){
+                    content += `<input id="${o}" name="option" type="radio" value="${options[o]}" onclick="chooseOption(this)">${options[o]}</input>`;
+                }
+                content += `</form><label id="feedbackDiv${q}"><br><br></label>`
+            }
+            content += `<button onclick="submit()" id="submit">submit</button></form>`;
+            stem.innerHTML = content;
+
+    }
+};
+
+//to handle teh user chossen option  
+function chooseOption(option){
+    let choiceNum = option.id;
+    let quesNum = option.parentNode.firstChild.id;
+    let xReq = new XMLHttpRequest();
+
+    xReq.onreadystatechange = function(){displayFeedback(xReq, option)};
+    xReq.open('GET','/getanswer?stem='+quesNum+'&&option='+choiceNum,true);
+    xReq.send(); 
+}
+
+//display feedback
+function displayFeedback(xReq, option){
+    let quesNum = option.parentNode.firstChild.id;
+    let feedbackDiv = document.getElementById('feedbackDiv'+quesNum);
+    if(xReq.readyState == 4 && xReq.status == 200){
+        feedbackDiv.innerHTML = xReq.responseText + '<br><br>';
+    }
+};
+
+//submit the quiz with the user's current selections
+function submit(){
+    let selected = document.getElementsByName('option');
+    let selections = [];
+    
+    for (let i=0; i<selected.length; i++){
+        if (selected.item(i).checked){      
+            selections.push(selected.item(i).id);       
+        } 
+    }
+    if (selections.length<4){     
+        alert('please answer all questions before submitting!');   
+    } else {
+        let xReq = new XMLHttpRequest();
+        xReq.onreadystatechange = displayScore;
+        xReq.open('GET','/getscore?ans='+selections,true);
+        xReq.send(); 
+    }
+}
+
+function displayScore(){
+    let stem = document.getElementById('score');
+    stem.innerHTML = this.responseText;
+}
+</script>
 
 </html>
