@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/ShaimaaAliECE/lab4-danalkwifi#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "xmlhttprequest": "^1.8.0"
   }
 }
