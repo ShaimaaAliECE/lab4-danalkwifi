@@ -4,7 +4,6 @@ let questionsList = require('./questions.json');
 
 const app = express();
 
-// serve static contents
 app.use(express.static('static'));
 
 // dynamic handling 
@@ -12,7 +11,6 @@ app.use(express.static('static'));
 
 // called to get the quiz questions
 app.get('/questionsInJSON', (request,response) => {
-    // send json file of questions
     response.json(questionsList);
 });
 
@@ -41,9 +39,8 @@ app.get('/get-score', (request, response) => {
         solutions.push(questionsList[i].answerIndex);
     }
     for (let i=0;i<selections.length;i++){
-        // compares the chosen index to the answer index for all questions
         if(selections[i] == solutions[i]){
-            score += 1;        // if the correct answer is selected, increase the score
+            score += 1;       
         }  
     }
     
